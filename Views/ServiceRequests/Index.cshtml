@@ -1,0 +1,161 @@
+﻿@model IEnumerable<EAPD7111Part2POE.Models.Entities.ServiceRequest>
+
+@{
+    ViewData["Title"] = "Service Requests";
+}
+
+<div class="container">
+    <div class="row mb-3">
+        <div class="col">
+            <h1><i class="bi bi-truck"></i> Service Requests</h1>
+            <p class="text-muted">Manage and track all service requests</p>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Create" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle"></i> New Service Request
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Service Requests</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Request Type</th>
+                            <th>Contract</th>
+                            <th>Client</th>
+                            <th>Description</th>
+                            <th>Cost</th>
+                            <th>Cost (ZAR)</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Request Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var request in Model)
+                        {
+                            <tr>
+                                <td><strong>@request.RequestType</strong></td>
+                                <td>@request.Contract?.ContractReference</td>
+                                <td>@request.Contract?.Client?.CompanyName</td>
+                                <td>@request.Description</td>
+                                <td>
+                                    <span class="fw-bold">@request.Cost.ToString("N2")</span>
+                                    <br />
+                                    <small class="text-muted">@request.Currency</small>
+                                </td>
+                                <td>
+                                    @if (request.CostInZAR.HasValue)
+                                    {
+                                        <span class="text-success fw-bold">
+                                            <i class="bi bi-currency-exchange"></i> @request.CostInZAR.Value.ToString("N2") ZAR
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            <i class="bi bi-dash-circle"></i> N/A
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        var priorityClass = request.Priority switch
+                                        {
+                                            "Critical" => "danger",
+                                            "High" => "warning",
+                                            "Medium" => "info",
+                                            "Low" => "secondary",
+                                            _ => "secondary"
+                                        };
+                                    }
+                                    <span class="badge bg-@priorityClass">@request.Priority</span>
+                                </td>
+                                <td>
+                                    @{
+                                        var statusClass = request.Status.ToString() switch
+                                        {
+                                            "Pending" => "warning",
+                                            "Approved" => "success",
+                                            "Completed" => "info",
+                                            "Rejected" => "danger",
+                                            _ => "secondary"
+                                        };
+                                    }
+                                    <span class="badge bg-@statusClass">@request.Status</span>
+                                </td>
+                                <td>@request.RequestDate.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@request.ServiceRequestId" class="btn btn-sm btn-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if (request.Status == EAPD7111Part2POE.Models.Entities.RequestStatus.Pending)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@request.ServiceRequestId" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        }
+                                        <a asp-action="Delete" asp-route-id="@request.ServiceRequestId" class="btn btn-sm btn-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <h4 class="text-muted mt-3">No Service Requests Found</h4>
+                    <p class="text-muted">Click the "New Service Request" button to create your first request.</p>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary mt-3">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Total Requests:</strong> @Model.Count()
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Total Cost (Original Currency):</strong>
+                            @Model.Sum(r => r.Cost).ToString("N2")
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Total Cost (ZAR):</strong>
+                            @Model.Where(r => r.CostInZAR.HasValue).Sum(r => r.CostInZAR.Value).ToString("N2") ZAR
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

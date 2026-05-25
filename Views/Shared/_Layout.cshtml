@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GLMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-truck"></i> Global Logistics Management System
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-people"></i> Clients
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="Index">All Clients</a></li>
+                                <li><a class="dropdown-item" asp-controller="Clients" asp-action="Create">Add Client</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-file-earmark-text"></i> Contracts
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Contracts" asp-action="Index">All Contracts</a></li>
+                                <li><a class="dropdown-item" asp-controller="Contracts" asp-action="Create">Create Contract</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" asp-controller="Contracts" asp-action="ExpiredContracts">
+                                        <i class="bi bi-exclamation-triangle"></i> Compliance Report
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-truck"></i> Service Requests
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="ServiceRequests" asp-action="Index">All Requests</a></li>
+                                <li><a class="dropdown-item" asp-controller="ServiceRequests" asp-action="Create">New Request</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-calculator"></i> Financial
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Financial" asp-action="Index">Dashboard</a></li>
+                                <li><a class="dropdown-item" asp-controller="Financial" asp-action="ConvertCurrency">Currency Converter</a></li>
+                                <li><a class="dropdown-item" asp-controller="Financial" asp-action="InvoiceCostCalculator">Invoice Calculator</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - Global Logistics Management System - TechMove Logistics
+            <span class="float-end">
+                <i class="bi bi-shield-check"></i> Secure File Handling v2.0
+            </span>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Global JavaScript for file handling utilities -->
+    <script>
+        // Global function to show toast notifications
+        window.showToast = function (message, type = 'success') {
+        var toastHtml = `
+        <div class="position-fixed top-0 end-0 m-3" style="z-index: 9999;">
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'exclamation-triangle-fill'}"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        </div>
+        `;
+        $('body').append(toastHtml);
+        setTimeout(function () {
+        $('.position-fixed.top-0.end-0').fadeOut(300, function () {
+        $(this).remove();
+        });
+        }, 5000);
+        };
+
+        // Global function to validate PDF files
+        window.validatePDFFile = function (file) {
+        if (!file) return { valid: false, message: 'No file selected' };
+
+        // Check file type
+        if (file.type !== 'application/pdf') {
+        return { valid: false, message: 'Only PDF files are allowed' };
+        }
+
+        // Check file size (10MB limit)
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+        return { valid: false, message: `File size exceeds 10MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB)` };
+        }
+
+        return { valid: true, message: 'Valid PDF file', size: file.size };
+        };
+
+        // Global function to format file size
+        window.formatFileSize = function (bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        };
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

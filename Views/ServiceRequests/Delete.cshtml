@@ -1,0 +1,48 @@
+﻿@model EAPD7111Part2POE.Models.Entities.ServiceRequest
+
+@{
+    ViewData["Title"] = "Delete Service Request";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">Delete Service Request</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Warning!</strong> This action cannot be undone.
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-3">Request Type</dt>
+                        <dd class="col-sm-9">@Model.RequestType</dd>
+
+                        <dt class="col-sm-3">Contract</dt>
+                        <dd class="col-sm-9">@Model.Contract?.ContractReference</dd>
+
+                        <dt class="col-sm-3">Description</dt>
+                        <dd class="col-sm-9">@Model.Description</dd>
+
+                        <dt class="col-sm-3">Cost</dt>
+                        <dd class="col-sm-9">@Model.Cost @Model.Currency</dd>
+
+                        <dt class="col-sm-3">Priority</dt>
+                        <dd class="col-sm-9">@Model.Priority</dd>
+
+                        <dt class="col-sm-3">Status</dt>
+                        <dd class="col-sm-9">@Model.Status</dd>
+                    </dl>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="ServiceRequestId" />
+                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

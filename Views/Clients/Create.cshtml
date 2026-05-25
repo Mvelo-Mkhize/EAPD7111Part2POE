@@ -1,0 +1,77 @@
+﻿@model EAPD7111Part2POE.Models.Entities.Client
+
+@{
+    ViewData["Title"] = "Create Client";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Create New Client</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="CompanyName" class="form-label"></label>
+                            <input asp-for="CompanyName" class="form-control" />
+                            <span asp-validation-for="CompanyName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ContactPerson" class="form-label"></label>
+                            <input asp-for="ContactPerson" class="form-control" />
+                            <span asp-validation-for="ContactPerson" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Region" class="form-label"></label>
+                            <select asp-for="Region" class="form-control">
+                                <option value="">Select Region</option>
+                                <option>North America</option>
+                                <option>Europe</option>
+                                <option>Asia</option>
+                                <option>South America</option>
+                                <option>Africa</option>
+                                <option>Australia</option>
+                            </select>
+                            <span asp-validation-for="Region" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <textarea asp-for="Address" rows="3" class="form-control"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Create Client</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

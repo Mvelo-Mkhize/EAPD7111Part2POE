@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Invoice Cost Calculator";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Invoice Cost Calculator</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label">Select Service Request</label>
+                        <select id="ServiceRequestSelect" class="form-control">
+                            <option value="">-- Select Service Request --</option>
+                            @foreach (var request in ViewBag.ServiceRequests)
+                            {
+                                <option value="@request.ServiceRequestId">
+                                    @request.RequestType - @request.Description (Cost: @request.Cost @request.Currency)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div id="RequestDetails" style="display: none;">
+                        <div class="card mb-3">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Service Request Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row" id="RequestInfo">
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Currency Conversion</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <select id="TargetCurrency" class="form-control">
+                                            <option value="USD">USD - US Dollar</option>
+                                            <option value="EUR">EUR - Euro</option>
+                                            <option value="GBP">GBP - British Pound</option>
+                                            <option value="JPY">JPY - Japanese Yen</option>
+                                            <option value="CAD">CAD - Canadian Dollar</option>
+                                            <option value="AUD">AUD - Australian Dollar</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button id="ConvertBtn" class="btn btn-primary w-100">Convert to Selected Currency</button>
+                                    </div>
+                                </div>
+                                <div id="ConversionResult" class="mt-3" style="display: none;">
+                                    <div class="alert alert-success">
+                                        <strong>Converted Amount:</strong> <span id="ConvertedAmount"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#ServiceRequestSelect').change(function () {
+            var id = $(this).val();
+            if (id) {
+                $('#RequestDetails').show();
+                // Load request details (simplified - you can make an AJAX call)
+                var selectedText = $('#ServiceRequestSelect option:selected').text();
+                var parts = selectedText.split(' - ');
+                $('#RequestInfo').html(`
+                            <dt class="col-sm-4">Request Type</dt>
+                            <dd class="col-sm-8">${parts[0]}</dd>
+                            <dt class="col-sm-4">Description</dt>
+                            <dd class="col-sm-8">${parts[1] || 'N/A'}</dd>
+                        `);
+            } else {
+                $('#RequestDetails').hide();
+                $('#ConversionResult').hide();
+            }
+        });
+
+        $('#ConvertBtn').click(function () {
+            var id = $('#ServiceRequestSelect').val();
+            var targetCurrency = $('#TargetCurrency').val();
+
+            if (id && targetCurrency) {
+                $.ajax({
+                    url: '@Url.Action("CalculateConversion", "Financial")',
+                    type: 'POST',
+                    data: { serviceRequestId: id, targetCurrency: targetCurrency },
+                    success: function (data) {
+                        $('#ConvertedAmount').html(`${data.originalAmount} ${data.originalCurrency} = ${data.convertedAmount} ${data.targetCurrency}`);
+                        $('#ConversionResult').show();
+                    },
+                    error: function () {
+                        alert('Error performing conversion');
+                    }
+                });
+            } else {
+                alert('Please select a service request');
+            }
+        });
+    </script>
+}

@@ -1,0 +1,107 @@
+﻿@model EAPD7111Part2POE.Models.Entities.ServiceRequest
+
+@{
+    ViewData["Title"] = "Edit Service Request";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h3 class="mb-0">Edit Service Request</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        Only pending service requests can be edited. Status will remain as Pending after editing.
+                    </div>
+
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="ServiceRequestId" />
+                        <input type="hidden" asp-for="RequestDate" />
+                        <input type="hidden" asp-for="Status" />
+
+                        <div class="mb-3">
+                            <label asp-for="ContractId" class="form-label"></label>
+                            <select asp-for="ContractId" class="form-control" asp-items="@(new SelectList(ViewBag.ActiveContracts, "ContractId", "ContractReference"))">
+                                <option value="">-- Select Active Contract --</option>
+                            </select>
+                            <span asp-validation-for="ContractId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RequestType" class="form-label"></label>
+                            <select asp-for="RequestType" class="form-control">
+                                <option>Freight</option>
+                                <option>Warehousing</option>
+                                <option>Customs Clearance</option>
+                                <option>Documentation</option>
+                                <option>Insurance</option>
+                            </select>
+                            <span asp-validation-for="RequestType" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Cost" class="form-label"></label>
+                                    <input asp-for="Cost" type="number" step="0.01" class="form-control" />
+                                    <span asp-validation-for="Cost" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Currency" class="form-label"></label>
+                                    <select asp-for="Currency" class="form-control">
+                                        <option value="USD">USD - US Dollar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - British Pound</option>
+                                        <option value="JPY">JPY - Japanese Yen</option>
+                                        <option value="CAD">CAD - Canadian Dollar</option>
+                                        <option value="AUD">AUD - Australian Dollar</option>
+                                    </select>
+                                    <span asp-validation-for="Currency" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Priority" class="form-label"></label>
+                            <select asp-for="Priority" class="form-control">
+                                <option>Low</option>
+                                <option>Medium</option>
+                                <option>High</option>
+                                <option>Critical</option>
+                            </select>
+                            <span asp-validation-for="Priority" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SpecialInstructions" class="form-label"></label>
+                            <textarea asp-for="SpecialInstructions" rows="2" class="form-control"></textarea>
+                            <span asp-validation-for="SpecialInstructions" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-warning">Save Changes</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

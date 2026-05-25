@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Currency Converter";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">International Currency Converter</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Amount</label>
+                                    <input type="number" name="amount" step="0.01" class="form-control" required placeholder="Enter amount" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">From Currency</label>
+                                    <select name="fromCurrency" class="form-control">
+                                        <option value="USD">USD - US Dollar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - British Pound</option>
+                                        <option value="JPY">JPY - Japanese Yen</option>
+                                        <option value="CAD">CAD - Canadian Dollar</option>
+                                        <option value="AUD">AUD - Australian Dollar</option>
+                                        <option value="CHF">CHF - Swiss Franc</option>
+                                        <option value="CNY">CNY - Chinese Yuan</option>
+                                        <option value="INR">INR - Indian Rupee</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">To Currency</label>
+                                    <select name="toCurrency" class="form-control">
+                                        <option value="USD">USD - US Dollar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - British Pound</option>
+                                        <option value="JPY">JPY - Japanese Yen</option>
+                                        <option value="CAD">CAD - Canadian Dollar</option>
+                                        <option value="AUD">AUD - Australian Dollar</option>
+                                        <option value="CHF">CHF - Swiss Franc</option>
+                                        <option value="CNY">CNY - Chinese Yuan</option>
+                                        <option value="INR">INR - Indian Rupee</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-success w-100">Convert Currency</button>
+                        </div>
+                    </form>
+
+                    @if (ViewBag.ConvertedAmount != null)
+                    {
+                        <div class="alert alert-info mt-3">
+                            <h4>Conversion Result</h4>
+                            <p class="mb-2">
+                                <strong>@ViewBag.OriginalAmount.ToString("N2") @ViewBag.FromCurrency</strong> =
+                                <strong class="text-success">@ViewBag.ConvertedAmount.ToString("N2") @ViewBag.ToCurrency</strong>
+                            </p>
+                            <hr />
+                            <small class="text-muted">
+                                Exchange Rate: 1 @ViewBag.FromCurrency = @ViewBag.ExchangeRate.ToString("N4") @ViewBag.ToCurrency<br />
+                                Rate fetched at: @ViewBag.Timestamp
+                            </small>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(ViewBag.Error))
+                    {
+                        <div class="alert alert-danger">@ViewBag.Error</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

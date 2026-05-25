@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Financial Dashboard";
+}
+
+<div class="container">
+    <div class="row mb-3">
+        <div class="col">
+            <h1>Financial Dashboard</h1>
+            <p class="lead">Real-time financial overview and currency information</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Completed/Approved Service Costs</h5>
+                    <h2 class="mb-0">$@ViewBag.TotalCost.ToString("N2")</h2>
+                    <small>USD Equivalent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Service Costs</h5>
+                    <h2 class="mb-0">$@ViewBag.PendingCost.ToString("N2")</h2>
+                    <small>USD Equivalent</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Live Exchange Rates (Base: USD)</h5>
+        </div>
+        <div class="card-body">
+            <div id="LiveRates" class="row">
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading rates...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="@Url.Action("ConvertCurrency", "Financial")" class="btn btn-primary w-100 mb-2">
+                        <i class="bi bi-currency-exchange"></i> Currency Converter
+                    </a>
+                    <a href="@Url.Action("InvoiceCostCalculator", "Financial")" class="btn btn-success w-100">
+                        <i class="bi bi-receipt"></i> Invoice Calculator
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Information</h5>
+                </div>
+                <div class="card-body">
+                    <p>Exchange rates are fetched live from <strong>ExchangeRate-API</strong>.</p>
+                    <p>Rates update automatically and reflect current market conditions.</p>
+                    <small class="text-muted">Note: Conversion rates are for informational purposes only.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("GetLiveRates", "Financial")',
+                type: 'GET',
+                success: function (data) {
+                    var html = '';
+                    var currencies = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR'];
+                    currencies.forEach(function (currency) {
+                        var rate = data[currency] || 'N/A';
+                        html += '<div class="col-md-3 mb-3">';
+                        html += '<div class="card">';
+                        html += '<div class="card-body text-center">';
+                        html += '<h4>' + currency + '</h4>';
+                        html += '<h3>' + (typeof rate === 'number' ? rate.toFixed(4) : rate) + '</h3>';
+                        html += '<small>USD = ' + currency + '</small>';
+                        html += '</div></div></div>';
+                    });
+                    $('#LiveRates').html(html);
+                },
+                error: function () {
+                    $('#LiveRates').html('<div class="col-12"><div class="alert alert-warning">Unable to load exchange rates. Please try again later.</div></div>');
+                }
+            });
+        });
+    </script>
+}

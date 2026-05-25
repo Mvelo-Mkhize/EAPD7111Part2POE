@@ -1,0 +1,163 @@
+﻿@model EAPD7111Part2POE.Models.Entities.ServiceRequest
+
+@{
+    ViewData["Title"] = "Service Request Details";
+}
+
+<div class="container">
+    <div class="row mb-3">
+        <div class="col">
+            <h1><i class="bi bi-info-circle"></i> Service Request Details</h1>
+        </div>
+        <div class="col text-end">
+            @if (Model.Status == EAPD7111Part2POE.Models.Entities.RequestStatus.Pending)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.ServiceRequestId" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+            }
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.IsContractValid && Model.Status != EAPD7111Part2POE.Models.Entities.RequestStatus.Completed)
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <strong>⚠️ Compliance Issue:</strong> The contract associated with this service request is no longer valid.
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-file-text"></i> Request Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Request Type</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-info">@Model.RequestType</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Contract Reference</dt>
+                        <dd class="col-sm-8">
+                            <a asp-controller="Contracts" asp-action="Details" asp-route-id="@Model.ContractId" class="text-decoration-none">
+                                @Model.Contract?.ContractReference
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </dd>
+
+                        <dt class="col-sm-4">Client</dt>
+                        <dd class="col-sm-8">@Model.Contract?.Client?.CompanyName</dd>
+
+                        <dt class="col-sm-4">Description</dt>
+                        <dd class="col-sm-8">@Model.Description</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Cost</dt>
+                        <dd class="col-sm-8">
+                            <span class="fw-bold fs-5">@Model.Cost.ToString("N2") @Model.Currency</span>
+                            @if (Model.CostInZAR.HasValue)
+                            {
+                                <br />
+                                <span class="text-success">
+                                    <i class="bi bi-currency-exchange"></i>
+                                    <strong>ZAR Equivalent:</strong> @Model.CostInZAR.Value.ToString("N2") ZAR
+                                </span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Priority</dt>
+                        <dd class="col-sm-8">
+                            @{
+                                var priorityClass = Model.Priority switch
+                                {
+                                    "Critical" => "danger",
+                                    "High" => "warning",
+                                    "Medium" => "info",
+                                    "Low" => "secondary",
+                                    _ => "secondary"
+                                };
+                            }
+                            <span class="badge bg-@priorityClass fs-6">@Model.Priority</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">
+                            @{
+                                var statusClass = Model.Status.ToString() switch
+                                {
+                                    "Pending" => "warning",
+                                    "Approved" => "success",
+                                    "Completed" => "info",
+                                    "Rejected" => "danger",
+                                    _ => "secondary"
+                                };
+                            }
+                            <span class="badge bg-@statusClass fs-6">@Model.Status</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Request Date</dt>
+                        <dd class="col-sm-8">@Model.RequestDate.ToString("yyyy-MM-dd HH:mm")</dd>
+                    </dl>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.SpecialInstructions))
+            {
+                <div class="alert alert-secondary mt-3">
+                    <strong><i class="bi bi-info-circle"></i> Special Instructions:</strong>
+                    <p class="mb-0 mt-2">@Model.SpecialInstructions</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (Model.Status == EAPD7111Part2POE.Models.Entities.RequestStatus.Pending)
+    {
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-arrow-repeat"></i> Update Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="btn-group" role="group">
+                    <button onclick="updateStatus(@Model.ServiceRequestId, 1)" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Approve
+                    </button>
+                    <button onclick="updateStatus(@Model.ServiceRequestId, 3)" class="btn btn-danger btn-lg">
+                        <i class="bi bi-x-circle"></i> Reject
+                    </button>
+                </div>
+                <p class="text-muted mt-3 small">
+                    <i class="bi bi-info-circle"></i> Once approved or rejected, the request cannot be edited.
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function updateStatus(id, status) {
+            if (confirm('Are you sure you want to update the status of this service request?')) {
+                $.ajax({
+                    url: '@Url.Action("UpdateStatus", "ServiceRequests")',
+                    type: 'POST',
+                    data: { id: id, status: status },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Error updating status');
+                    }
+                });
+            }
+        }
+    </script>
+}

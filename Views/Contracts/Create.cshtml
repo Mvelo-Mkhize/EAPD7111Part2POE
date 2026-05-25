@@ -1,0 +1,184 @@
+﻿@model EAPD7111Part2POE.Models.Entities.Contract
+
+@{
+    ViewData["Title"] = "Create Contract";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Create New Contract</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="ClientId" class="form-label"></label>
+                            <select asp-for="ClientId" class="form-control" asp-items="@(new SelectList(ViewBag.Clients, "ClientId", "CompanyName"))">
+                                <option value="">-- Select Client --</option>
+                            </select>
+                            <span asp-validation-for="ClientId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ContractReference" class="form-label"></label>
+                            <input asp-for="ContractReference" class="form-control" placeholder="e.g., CT-2024-001" />
+                            <span asp-validation-for="ContractReference" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="StartDate" class="form-label"></label>
+                                    <input asp-for="StartDate" type="date" class="form-control" />
+                                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="EndDate" class="form-label"></label>
+                                    <input asp-for="EndDate" type="date" class="form-control" />
+                                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ServiceLevel" class="form-label"></label>
+                                    <select asp-for="ServiceLevel" class="form-control">
+                                        <option>Standard</option>
+                                        <option>Premium</option>
+                                        <option>Express</option>
+                                    </select>
+                                    <span asp-validation-for="ServiceLevel" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Status" class="form-label"></label>
+                                    <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<EAPD7111Part2POE.Models.Entities.ContractStatus>()"></select>
+                                    <span asp-validation-for="Status" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ContractValue" class="form-label"></label>
+                                    <input asp-for="ContractValue" type="number" step="0.01" class="form-control" />
+                                    <span asp-validation-for="ContractValue" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Currency" class="form-label"></label>
+                                    <select asp-for="Currency" class="form-control">
+                                        <option value="USD">USD - US Dollar</option>
+                                        <option value="EUR">EUR - Euro</option>
+                                        <option value="GBP">GBP - British Pound</option>
+                                        <option value="JPY">JPY - Japanese Yen</option>
+                                        <option value="CAD">CAD - Canadian Dollar</option>
+                                        <option value="AUD">AUD - Australian Dollar</option>
+                                    </select>
+                                    <span asp-validation-for="Currency" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SpecialTerms" class="form-label"></label>
+                            <textarea asp-for="SpecialTerms" rows="3" class="form-control"></textarea>
+                            <span asp-validation-for="SpecialTerms" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="SignedAgreement" class="form-label fw-bold">Signed Agreement (PDF)</label>
+                            <div class="card border-2" style="background-color: #f8f9fa;">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <input type="file" name="SignedAgreement" class="form-control" accept="application/pdf" id="fileInput" />
+                                        <div id="fileValidation" class="form-text"></div>
+                                    </div>
+
+                                    <div id="fileInfo" style="display: none;" class="alert alert-success mt-2">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span id="fileName"></span>
+                                        <span id="fileSize" class="ms-2"></span>
+                                    </div>
+
+                                    <div class="text-muted small">
+                                        <i class="bi bi-info-circle"></i>
+                                        <strong>File Requirements:</strong>
+                                        <ul class="mb-0 mt-1">
+                                            <li>Only PDF files are allowed</li>
+                                            <li>Maximum file size: 10MB</li>
+                                            <li>File will be stored with a unique UUID name to prevent conflicts</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Create Contract</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            $('#fileInput').on('change', function() {
+                const file = this.files[0];
+                const validationDiv = $('#fileValidation');
+                const fileInfoDiv = $('#fileInfo');
+
+                if (file) {
+                    // Validate file type
+                    if (file.type !== 'application/pdf') {
+                        validationDiv.html('<span class="text-danger">❌ Only PDF files are allowed</span>');
+                        $('#fileInfo').hide();
+                        $(this).val('');
+                        return;
+                    }
+
+                    // Validate file size (10MB max)
+                    const maxSize = 10 * 1024 * 1024;
+                    if (file.size > maxSize) {
+                        validationDiv.html('<span class="text-danger">❌ File size exceeds 10MB limit</span>');
+                        $('#fileInfo').hide();
+                        $(this).val('');
+                        return;
+                    }
+
+                    // File is valid
+                    validationDiv.html('<span class="text-success">✓ Valid PDF file</span>');
+
+                    // Display file info
+                    const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                    $('#fileName').html(`<strong>Selected:</strong> ${file.name}`);
+                    $('#fileSize').html(`<strong>Size:</strong> ${fileSizeInMB} MB`);
+                    fileInfoDiv.show();
+                } else {
+                    validationDiv.html('');
+                    $('#fileInfo').hide();
+                }
+            });
+        });
+    </script>
+}

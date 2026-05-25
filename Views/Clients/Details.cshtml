@@ -1,0 +1,111 @@
+﻿@model EAPD7111Part2POE.Models.Entities.Client
+
+@{
+    ViewData["Title"] = "Client Details";
+}
+
+<div class="container">
+    <div class="row mb-3">
+        <div class="col">
+            <h1>Client Details</h1>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Edit" asp-route-id="@Model.ClientId" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Client Information</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Company Name</dt>
+                <dd class="col-sm-9">@Model.CompanyName</dd>
+
+                <dt class="col-sm-3">Contact Person</dt>
+                <dd class="col-sm-9">@Model.ContactPerson</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Phone Number</dt>
+                <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+                <dt class="col-sm-3">Region</dt>
+                <dd class="col-sm-9">@Model.Region</dd>
+
+                <dt class="col-sm-3">Address</dt>
+                <dd class="col-sm-9">@Model.Address</dd>
+
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Contracts</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Contracts.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Contract Ref</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Service Level</th>
+                                <th>Status</th>
+                                <th>Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var contract in Model.Contracts)
+                            {
+                                <tr>
+                                    <td>@contract.ContractReference</td>
+                                    <td>@contract.StartDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@contract.EndDate.ToString("yyyy-MM-dd")</td>
+                                    <td>@contract.ServiceLevel</td>
+                                    <td>
+                                        @{
+                                            var statusClass = contract.Status.ToString() switch
+                                            {
+                                                "Active" => "success",
+                                                "Draft" => "secondary",
+                                                "Expired" => "danger",
+                                                "OnHold" => "warning",
+                                                _ => "info"
+                                            };
+                                        }
+                                        <span class="badge bg-@statusClass">@contract.Status</span>
+                                    </td>
+                                    <td>@contract.ContractValue @contract.Currency</td>
+                                    <td>
+                                        <a asp-controller="Contracts" asp-action="Details" asp-route-id="@contract.ContractId" class="btn btn-sm btn-info">View</a>
+                                        <a asp-controller="ServiceRequests" asp-action="Create" asp-route-contractId="@contract.ContractId" class="btn btn-sm btn-primary">Request</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No contracts found for this client.</p>
+                <a asp-controller="Contracts" asp-action="Create" class="btn btn-primary">Create First Contract</a>
+            }
+        </div>
+    </div>
+</div>

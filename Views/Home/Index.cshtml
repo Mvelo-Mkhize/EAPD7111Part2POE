@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">Global Logistics Management System</h1>
+            <p class="lead">Welcome to the central command center for all logistics operations</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Clients</h6>
+                            <h2 class="mb-0">@ViewBag.TotalClients</h2>
+                        </div>
+                        <i class="bi bi-people-fill fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Active Contracts</h6>
+                            <h2 class="mb-0">@ViewBag.ActiveContracts</h2>
+                        </div>
+                        <i class="bi bi-file-earmark-check-fill fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Pending Requests</h6>
+                            <h2 class="mb-0">@ViewBag.PendingRequests</h2>
+                        </div>
+                        <i class="bi bi-clock-history fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Expired Contracts</h6>
+                            <h2 class="mb-0">@ViewBag.ExpiredContractsCount</h2>
+                        </div>
+                        <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">⚠️ Contracts Expiring Soon</h5>
+                </div>
+                <div class="card-body">
+                    @if (((List<EAPD7111Part2POE.Models.Entities.Contract>)ViewBag.ExpiringContracts).Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var contract in ViewBag.ExpiringContracts)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>@contract.ContractReference</strong><br />
+                                            <small>Client: @contract.Client.CompanyName</small><br />
+                                            <small>Expires: @contract.EndDate.ToString("yyyy-MM-dd")</small>
+                                        </div>
+                                        <span class="badge bg-warning">@contract.DaysUntilExpiry days left</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No contracts expiring in the next 30 days.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📋 Recent Service Requests</h5>
+                </div>
+                <div class="card-body">
+                    @if (((List<EAPD7111Part2POE.Models.Entities.ServiceRequest>)ViewBag.RecentRequests).Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var request in ViewBag.RecentRequests)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>@request.RequestType</strong><br />
+                                            <small>Contract: @request.Contract.ContractReference</small><br />
+                                            <small>Cost: @request.Cost @request.Currency</small>
+                                        </div>
+                                        <span class="badge @(request.Status.ToString() == "Pending" ? "bg-warning" : "bg-success")">
+                                            @request.Status
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No recent service requests.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="@Url.Action("Create", "Clients")" class="btn btn-primary me-2">
+                        <i class="bi bi-person-plus"></i> Add Client
+                    </a>
+                    <a href="@Url.Action("Create", "Contracts")" class="btn btn-success me-2">
+                        <i class="bi bi-file-earmark-plus"></i> Create Contract
+                    </a>
+                    <a href="@Url.Action("Create", "ServiceRequests")" class="btn btn-info me-2">
+                        <i class="bi bi-truck"></i> New Service Request
+                    </a>
+                    <a href="@Url.Action("ExpiredContracts", "Contracts")" class="btn btn-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Compliance Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

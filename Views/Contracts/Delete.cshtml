@@ -1,0 +1,48 @@
+﻿@model EAPD7111Part2POE.Models.Entities.Contract
+
+@{
+    ViewData["Title"] = "Delete Contract";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">Delete Contract</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Warning!</strong> Deleting this contract will also delete all associated service requests.
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-3">Contract Reference</dt>
+                        <dd class="col-sm-9">@Model.ContractReference</dd>
+
+                        <dt class="col-sm-3">Client</dt>
+                        <dd class="col-sm-9">@Model.Client?.CompanyName</dd>
+
+                        <dt class="col-sm-3">Start Date</dt>
+                        <dd class="col-sm-9">@Model.StartDate.ToString("yyyy-MM-dd")</dd>
+
+                        <dt class="col-sm-3">End Date</dt>
+                        <dd class="col-sm-9">@Model.EndDate.ToString("yyyy-MM-dd")</dd>
+
+                        <dt class="col-sm-3">Status</dt>
+                        <dd class="col-sm-9">@Model.Status</dd>
+
+                        <dt class="col-sm-3">Value</dt>
+                        <dd class="col-sm-9">@Model.ContractValue @Model.Currency</dd>
+                    </dl>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="ContractId" />
+                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
