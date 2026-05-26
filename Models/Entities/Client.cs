@@ -39,7 +39,6 @@ namespace EAPD7111Part2POE.Models.Entities
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation property
         public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
     }
 }

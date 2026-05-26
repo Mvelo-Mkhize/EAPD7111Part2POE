@@ -17,7 +17,6 @@ namespace EAPD7111Part2POE.Controllers
             _logger = logger;
         }
 
-        // GET: Clients
         public async Task<IActionResult> Index()
         {
             try
@@ -38,7 +37,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Clients/Details/5
         public async Task<IActionResult> Details(int id)
         {
             try
@@ -66,12 +64,10 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Clients/Create
         public IActionResult Create()
         {
             try
             {
-                // Prepare regions for dropdown
                 ViewBag.Regions = new SelectList(new List<string>
                 {
                     "North America",
@@ -93,29 +89,24 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Clients/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Client client)
         {
             try
             {
-                // Remove CreatedAt from ModelState validation since we set it manually
                 ModelState.Remove("CreatedAt");
 
-                // Validate email format
                 if (!string.IsNullOrEmpty(client.Email) && !IsValidEmail(client.Email))
                 {
                     ModelState.AddModelError("Email", "Please enter a valid email address");
                 }
 
-                // Validate phone number (basic validation)
                 if (!string.IsNullOrEmpty(client.PhoneNumber) && !IsValidPhoneNumber(client.PhoneNumber))
                 {
                     ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
                 }
 
-                // Check if client with same email already exists
                 if (await _context.Clients.AnyAsync(c => c.Email == client.Email))
                 {
                     ModelState.AddModelError("Email", "A client with this email already exists");
@@ -135,7 +126,6 @@ namespace EAPD7111Part2POE.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Log validation errors
                 var errors = ModelState.Values.SelectMany(v => v.Errors);
                 foreach (var error in errors)
                 {
@@ -161,7 +151,6 @@ namespace EAPD7111Part2POE.Controllers
                 ModelState.AddModelError("", $"Error creating client: {ex.Message}");
             }
 
-            // Repopulate regions dropdown
             ViewBag.Regions = new SelectList(new List<string>
             {
                 "North America",
@@ -176,7 +165,6 @@ namespace EAPD7111Part2POE.Controllers
             return View(client);
         }
 
-        // GET: Clients/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -190,7 +178,6 @@ namespace EAPD7111Part2POE.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Prepare regions for dropdown
                 ViewBag.Regions = new SelectList(new List<string>
                 {
                     "North America",
@@ -212,7 +199,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Clients/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Client client)
@@ -224,29 +210,24 @@ namespace EAPD7111Part2POE.Controllers
 
             try
             {
-                // Remove CreatedAt from ModelState validation
                 ModelState.Remove("CreatedAt");
 
-                // Get the existing client to preserve CreatedAt
                 var existingClient = await _context.Clients.FindAsync(id);
                 if (existingClient == null)
                 {
                     return NotFound();
                 }
 
-                // Validate email format
                 if (!string.IsNullOrEmpty(client.Email) && !IsValidEmail(client.Email))
                 {
                     ModelState.AddModelError("Email", "Please enter a valid email address");
                 }
 
-                // Validate phone number
                 if (!string.IsNullOrEmpty(client.PhoneNumber) && !IsValidPhoneNumber(client.PhoneNumber))
                 {
                     ModelState.AddModelError("PhoneNumber", "Please enter a valid phone number");
                 }
 
-                // Check if email is already used by another client
                 if (await _context.Clients.AnyAsync(c => c.Email == client.Email && c.ClientId != id))
                 {
                     ModelState.AddModelError("Email", "A client with this email already exists");
@@ -254,7 +235,6 @@ namespace EAPD7111Part2POE.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    // Preserve the original CreatedAt date
                     client.CreatedAt = existingClient.CreatedAt;
 
                     _context.Entry(existingClient).CurrentValues.SetValues(client);
@@ -265,7 +245,6 @@ namespace EAPD7111Part2POE.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Log validation errors
                 var errors = ModelState.Values.SelectMany(v => v.Errors);
                 foreach (var error in errors)
                 {
@@ -292,7 +271,6 @@ namespace EAPD7111Part2POE.Controllers
                 ModelState.AddModelError("", $"Error updating client: {ex.Message}");
             }
 
-            // Repopulate regions dropdown
             ViewBag.Regions = new SelectList(new List<string>
             {
                 "North America",
@@ -307,7 +285,6 @@ namespace EAPD7111Part2POE.Controllers
             return View(client);
         }
 
-        // GET: Clients/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -323,7 +300,6 @@ namespace EAPD7111Part2POE.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Check if client has active contracts
                 var hasActiveContracts = client.Contracts.Any(c => c.Status == ContractStatus.Active);
                 if (hasActiveContracts)
                 {
@@ -340,7 +316,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Clients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -386,7 +361,6 @@ namespace EAPD7111Part2POE.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Clients/EnsureClientsExist
         public async Task<IActionResult> EnsureClientsExist()
         {
             try
@@ -397,7 +371,6 @@ namespace EAPD7111Part2POE.Controllers
                 {
                     _logger.LogInformation("No clients found. Adding sample clients...");
 
-                    // Add sample clients
                     var sampleClients = new List<Client>
                     {
                         new Client
@@ -463,7 +436,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Clients/GetClientCount
         [HttpGet]
         public async Task<JsonResult> GetClientCount()
         {
@@ -479,7 +451,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Clients/Search
         [HttpGet]
         public async Task<IActionResult> Search(string searchTerm)
         {
@@ -512,7 +483,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // Helper method to validate email
         private bool IsValidEmail(string email)
         {
             try
@@ -526,10 +496,8 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // Helper method to validate phone number
         private bool IsValidPhoneNumber(string phoneNumber)
         {
-            // Basic phone number validation - accepts various formats
             return !string.IsNullOrWhiteSpace(phoneNumber) &&
                    phoneNumber.Length >= 10 &&
                    phoneNumber.Length <= 20;

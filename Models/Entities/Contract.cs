@@ -43,22 +43,20 @@ namespace EAPD7111Part2POE.Models.Entities
         public string Currency { get; set; } = "USD";
 
         [Display(Name = "Special Terms")]
-        public string? SpecialTerms { get; set; } // Made nullable
+        public string? SpecialTerms { get; set; }   
 
         [Required]
         public ContractStatus Status { get; set; } = ContractStatus.Draft;
 
         [Display(Name = "Signed Agreement Path")]
-        public string? SignedAgreementPath { get; set; } // Made nullable
+        public string? SignedAgreementPath { get; set; }   
 
         [DataType(DataType.DateTime)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
         public virtual Client Client { get; set; }
         public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
 
-        // Computed property
         [NotMapped]
         [Display(Name = "Days Until Expiry")]
         public int DaysUntilExpiry => (EndDate - DateTime.UtcNow).Days;

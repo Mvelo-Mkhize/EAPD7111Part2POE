@@ -1,4 +1,5 @@
 ﻿@model EAPD7111Part2POE.Models.Entities.ServiceRequest
+@model EAPD7111Part2POE.Models.Entities.ServiceRequest
 
 @{
     ViewData["Title"] = "Create Service Request";
@@ -90,7 +91,6 @@
                             </div>
                         </div>
 
-                        <!-- ZAR Conversion Display -->
                         <div class="row" id="ZarConversionPanel" style="display: none;">
                             <div class="col-md-12">
                                 <div class="alert alert-success">
@@ -115,7 +115,6 @@
                             </div>
                         </div>
 
-                        <!-- Hidden field to store ZAR amount -->
                         <input type="hidden" asp-for="CostInZAR" id="CostInZAR" />
 
                         <div class="row">
@@ -171,7 +170,6 @@
         let lastFetchTime = null;
 
         $(document).ready(function () {
-            // Update currency symbol based on selection
             function updateCurrencySymbol() {
                 var currency = $('#CurrencySelect').val();
                 var symbol = '$';
@@ -187,16 +185,13 @@
                 $('#currencySymbol').text(symbol);
             }
 
-            // Fetch USD to ZAR exchange rate on page load
             fetchUSDtoZARRate();
 
-            // Auto-calculate when user types in the amount field
             $('#CostAmount').on('input', function () {
                 calculateZARAmount();
                 updateProgressBar();
             });
 
-            // When currency changes, update conversion
             $('#CurrencySelect').on('change', function () {
                 updateCurrencySymbol();
                 if ($(this).val() === 'USD') {
@@ -208,7 +203,6 @@
                 }
             });
 
-            // Add visual feedback for amount field
             $('#CostAmount').on('focus', function () {
                 $(this).parent().parent().addClass('border-primary');
             }).on('blur', function () {
@@ -218,12 +212,11 @@
                 }
             });
 
-            // Update progress bar animation
             function updateProgressBar() {
                 var usdAmount = parseFloat($('#CostAmount').val());
                 if (!isNaN(usdAmount) && usdAmount > 0 && currentExchangeRate > 0) {
                     var zarAmount = usdAmount * currentExchangeRate;
-                    var maxZar = 1000000; // Assume max 1 million ZAR for progress bar
+                    var maxZar = 1000000;         
                     var percentage = Math.min((zarAmount / maxZar) * 100, 100);
                     $('#ConversionProgress').css('width', percentage + '%');
                 } else {
@@ -231,13 +224,11 @@
                 }
             }
 
-            // Trigger initial check and symbol update
             updateCurrencySymbol();
             if ($('#CurrencySelect').val() === 'USD') {
                 $('#ZarConversionPanel').show();
             }
 
-            // Contract validation
             $('#ContractSelect').change(function () {
                 var contractId = $(this).val();
                 if (contractId) {
@@ -285,7 +276,6 @@
                         $('#RateTimestamp').html(`<i class="bi bi-clock"></i> Rate fetched: ${new Date(data.timestamp).toLocaleString()}`);
                         calculateZARAmount();
 
-                        // Show success notification
                         $('#ZarConversionPanel .alert').addClass('alert-success').removeClass('alert-warning');
                     } else {
                         console.error('Failed to fetch exchange rate');
@@ -312,7 +302,6 @@
                 $('#ZarAmount').text(zarAmount.toFixed(2));
                 $('#CostInZAR').val(zarAmount.toFixed(2));
 
-                // Add visual feedback
                 var zarPanel = $('#ZarAmount');
                 zarPanel.css('transform', 'scale(1.1)');
                 setTimeout(function () {
@@ -327,12 +316,11 @@
             }
         }
 
-        // Optional: Refresh rate every 5 minutes
         setInterval(function () {
             if ($('#CurrencySelect').val() === 'USD') {
                 fetchUSDtoZARRate();
             }
-        }, 300000); // 5 minutes
+        }, 300000);   
     </script>
 
     <style>

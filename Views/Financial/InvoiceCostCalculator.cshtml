@@ -74,7 +74,6 @@
             var id = $(this).val();
             if (id) {
                 $('#RequestDetails').show();
-                // Load request details (simplified - you can make an AJAX call)
                 var selectedText = $('#ServiceRequestSelect option:selected').text();
                 var parts = selectedText.split(' - ');
                 $('#RequestInfo').html(`

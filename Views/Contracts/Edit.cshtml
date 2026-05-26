@@ -173,7 +173,6 @@
                 const fileInfoDiv = $('#fileInfo');
 
                 if (file) {
-                    // Validate file type
                     if (file.type !== 'application/pdf') {
                         validationDiv.html('<span class="text-danger">❌ Only PDF files are allowed</span>');
                         fileInfoDiv.hide();
@@ -181,7 +180,6 @@
                         return;
                     }
 
-                    // Validate file size (10MB max)
                     const maxSize = 10 * 1024 * 1024;
                     if (file.size > maxSize) {
                         validationDiv.html('<span class="text-danger">❌ File size exceeds 10MB limit</span>');
@@ -190,10 +188,8 @@
                         return;
                     }
 
-                    // File is valid
                     validationDiv.html('<span class="text-success">✓ Valid PDF file - Ready to upload</span>');
 
-                    // Display file info
                     const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
                     $('#fileName').html(`<strong>New file selected:</strong> ${file.name}`);
                     $('#fileSize').html(`<strong>Size:</strong> ${fileSizeInMB} MB`);

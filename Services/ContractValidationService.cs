@@ -72,7 +72,6 @@ namespace EAPD7111Part2POE.Services
                     .OrderByDescending(c => c.EndDate)
                     .ToListAsync();
 
-                // Auto-update expired contracts
                 foreach (var contract in contracts.Where(c => c.Status == ContractStatus.Active && c.EndDate.Date < today))
                 {
                     contract.Status = ContractStatus.Expired;
@@ -102,7 +101,6 @@ namespace EAPD7111Part2POE.Services
 
                 if (contract != null)
                 {
-                    // Auto-update expired contracts
                     if (contract.Status == ContractStatus.Active && contract.EndDate.Date < DateTime.UtcNow.Date)
                     {
                         contract.Status = ContractStatus.Expired;

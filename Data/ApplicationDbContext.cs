@@ -18,12 +18,11 @@ namespace EAPD7111Part2POE.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure relationships with cascade delete
             modelBuilder.Entity<Client>()
                 .HasMany(c => c.Contracts)
                 .WithOne(c => c.Client)
                 .HasForeignKey(c => c.ClientId)
-                .OnDelete(DeleteBehavior.Restrict); // Changed from Cascade to Restrict to avoid accidental deletes
+                .OnDelete(DeleteBehavior.Restrict);          
 
             modelBuilder.Entity<Contract>()
                 .HasMany(c => c.ServiceRequests)
@@ -31,7 +30,6 @@ namespace EAPD7111Part2POE.Data
                 .HasForeignKey(s => s.ContractId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Configure Client entity
             modelBuilder.Entity<Client>()
                 .Property(c => c.CompanyName)
                 .HasMaxLength(100)
@@ -46,7 +44,6 @@ namespace EAPD7111Part2POE.Data
                 .Property(c => c.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            // Configure Contract entity
             modelBuilder.Entity<Contract>()
                 .Property(c => c.ContractReference)
                 .HasMaxLength(50)
@@ -64,7 +61,6 @@ namespace EAPD7111Part2POE.Data
                 .HasIndex(c => c.ContractReference)
                 .IsUnique();
 
-            // Configure ServiceRequest entity
             modelBuilder.Entity<ServiceRequest>()
                 .Property(s => s.Cost)
                 .HasPrecision(18, 2);

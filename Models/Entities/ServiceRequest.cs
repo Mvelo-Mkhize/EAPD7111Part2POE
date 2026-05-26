@@ -57,10 +57,8 @@ namespace EAPD7111Part2POE.Models.Entities
         [Display(Name = "Request Date")]
         public DateTime RequestDate { get; set; } = DateTime.UtcNow;
 
-        // Navigation property
         public virtual Contract Contract { get; set; }
 
-        // Validation property
         [NotMapped]
         public bool IsContractValid { get; set; }
     }

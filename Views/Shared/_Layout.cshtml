@@ -93,9 +93,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- Global JavaScript for file handling utilities -->
     <script>
-        // Global function to show toast notifications
         window.showToast = function (message, type = 'success') {
         var toastHtml = `
         <div class="position-fixed top-0 end-0 m-3" style="z-index: 9999;">
@@ -114,25 +112,22 @@
         }, 5000);
         };
 
-        // Global function to validate PDF files
         window.validatePDFFile = function (file) {
         if (!file) return { valid: false, message: 'No file selected' };
 
-        // Check file type
         if (file.type !== 'application/pdf') {
         return { valid: false, message: 'Only PDF files are allowed' };
         }
 
-        // Check file size (10MB limit)
         const maxSize = 10 * 1024 * 1024;
         if (file.size > maxSize) {
         return { valid: false, message: `File size exceeds 10MB limit (${(file.size / (1024 * 1024)).toFixed(2)}MB)` };
         }
 
+
         return { valid: true, message: 'Valid PDF file', size: file.size };
         };
 
-        // Global function to format file size
         window.formatFileSize = function (bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;

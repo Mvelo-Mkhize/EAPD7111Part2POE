@@ -25,7 +25,6 @@ namespace EAPD7111Part2POE.Controllers
             _logger = logger;
         }
 
-        // GET: Contracts
         public async Task<IActionResult> Index()
         {
             try
@@ -44,7 +43,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/Details/5
         public async Task<IActionResult> Details(int id)
         {
             try
@@ -70,7 +68,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/Create
         public async Task<IActionResult> Create()
         {
             try
@@ -92,12 +89,10 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Contracts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Contract contract, IFormFile SignedAgreement)
         {
-            // Remove SignedAgreementPath from ModelState validation since it's optional
             ModelState.Remove("SignedAgreementPath");
 
             _logger.LogInformation($"Attempting to create contract: {contract.ContractReference} for ClientId: {contract.ClientId}");
@@ -106,7 +101,6 @@ namespace EAPD7111Part2POE.Controllers
             {
                 try
                 {
-                    // Handle file upload if provided
                     if (SignedAgreement != null && SignedAgreement.Length > 0)
                     {
                         var uploadResult = await _fileStorage.SaveFileAsync(SignedAgreement, "contracts");
@@ -124,13 +118,11 @@ namespace EAPD7111Part2POE.Controllers
 
                     contract.CreatedAt = DateTime.UtcNow;
 
-                    // Auto-expire if end date is in the past
                     if (contract.EndDate < DateTime.UtcNow && contract.Status == ContractStatus.Active)
                     {
                         contract.Status = ContractStatus.Expired;
                     }
 
-                    // Verify Client exists
                     var clientExists = await _context.Clients.AnyAsync(c => c.ClientId == contract.ClientId);
                     if (!clientExists)
                     {
@@ -170,7 +162,6 @@ namespace EAPD7111Part2POE.Controllers
             }
             else
             {
-                // Log validation errors
                 var errors = ModelState.Values.SelectMany(v => v.Errors);
                 foreach (var error in errors)
                 {
@@ -182,7 +173,6 @@ namespace EAPD7111Part2POE.Controllers
             return View(contract);
         }
 
-        // GET: Contracts/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -205,7 +195,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Contracts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Contract contract, IFormFile SignedAgreement)
@@ -213,7 +202,6 @@ namespace EAPD7111Part2POE.Controllers
             if (id != contract.ContractId)
                 return NotFound();
 
-            // Remove SignedAgreementPath from ModelState validation
             ModelState.Remove("SignedAgreementPath");
 
             if (ModelState.IsValid)
@@ -224,7 +212,6 @@ namespace EAPD7111Part2POE.Controllers
                     if (existingContract == null)
                         return NotFound();
 
-                    // Handle new file upload if provided
                     if (SignedAgreement != null && SignedAgreement.Length > 0)
                     {
                         var uploadResult = await _fileStorage.SaveFileAsync(SignedAgreement, "contracts");
@@ -236,7 +223,6 @@ namespace EAPD7111Part2POE.Controllers
                             return View(contract);
                         }
 
-                        // Delete old file if exists
                         if (!string.IsNullOrEmpty(existingContract.SignedAgreementPath))
                         {
                             _fileStorage.DeleteFile(existingContract.SignedAgreementPath);
@@ -247,11 +233,9 @@ namespace EAPD7111Part2POE.Controllers
                     }
                     else
                     {
-                        // Keep existing file path if no new file is uploaded
                         contract.SignedAgreementPath = existingContract.SignedAgreementPath;
                     }
 
-                    // Auto-update status based on dates
                     if (contract.EndDate < DateTime.UtcNow && contract.Status == ContractStatus.Active)
                     {
                         contract.Status = ContractStatus.Expired;
@@ -281,7 +265,6 @@ namespace EAPD7111Part2POE.Controllers
             return View(contract);
         }
 
-        // GET: Contracts/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -306,7 +289,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Contracts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -319,7 +301,6 @@ namespace EAPD7111Part2POE.Controllers
 
                 if (contract != null)
                 {
-                    // Delete associated file if it exists
                     if (!string.IsNullOrEmpty(contract.SignedAgreementPath))
                     {
                         _fileStorage.DeleteFile(contract.SignedAgreementPath);
@@ -338,7 +319,6 @@ namespace EAPD7111Part2POE.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Contracts/DownloadPDF/5
         public async Task<IActionResult> DownloadPDF(int id)
         {
             try
@@ -365,7 +345,6 @@ namespace EAPD7111Part2POE.Controllers
                     return RedirectToAction(nameof(Details), new { id });
                 }
 
-                // Use original contract reference for filename, but sanitize it
                 var safeFileName = $"{Regex.Replace(contract.ContractReference, @"[^a-zA-Z0-9_-]", "")}.pdf";
 
                 _logger.LogInformation($"File downloaded successfully: {contract.ContractReference} - Size: {downloadResult.FileSize} bytes");
@@ -380,7 +359,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/TestDatabase
         public async Task<IActionResult> TestDatabase()
         {
             try
@@ -410,7 +388,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/ExpiredContracts
         public async Task<IActionResult> ExpiredContracts()
         {
             try
@@ -429,7 +406,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/ValidateContract/5
         [HttpGet]
         public async Task<JsonResult> ValidateContract(int id)
         {
@@ -453,7 +429,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Contracts/SendComplianceReminder/5
         [HttpPost]
         public async Task<IActionResult> SendComplianceReminder(int contractId)
         {
@@ -466,7 +441,6 @@ namespace EAPD7111Part2POE.Controllers
                 if (contract == null)
                     return NotFound();
 
-                // Simulate sending email
                 _logger.LogInformation($"Compliance reminder sent to {contract.Client.Email} for contract {contract.ContractReference}");
 
                 return Json(new { success = true, message = $"Reminder sent to {contract.Client.Email}" });
@@ -478,7 +452,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // POST: Contracts/SendBulkComplianceReminder
         [HttpPost]
         public async Task<IActionResult> SendBulkComplianceReminder()
         {
@@ -500,7 +473,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/ExportComplianceReport
         public async Task<IActionResult> ExportComplianceReport()
         {
             try
@@ -560,7 +532,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/GetExpiringContractsCount
         [HttpGet]
         public async Task<JsonResult> GetExpiringContractsCount()
         {
@@ -576,7 +547,6 @@ namespace EAPD7111Part2POE.Controllers
             }
         }
 
-        // GET: Contracts/GetContractSummary
         [HttpGet]
         public async Task<JsonResult> GetContractSummary()
         {

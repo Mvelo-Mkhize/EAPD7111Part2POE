@@ -75,7 +75,6 @@ namespace EAPD7111Part2POE.Controllers
                 serviceRequest.RequestDate = DateTime.UtcNow;
                 serviceRequest.Status = RequestStatus.Pending;
 
-                // Only store ZAR conversion if currency is USD
                 if (serviceRequest.Currency != "USD")
                 {
                     serviceRequest.CostInZAR = null;
@@ -137,7 +136,6 @@ namespace EAPD7111Part2POE.Controllers
             {
                 try
                 {
-                    // Update ZAR conversion if currency changed
                     if (serviceRequest.Currency != "USD")
                     {
                         serviceRequest.CostInZAR = null;

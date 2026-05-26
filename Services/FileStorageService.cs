@@ -13,7 +13,7 @@ namespace EAPD7111Part2POE.Services
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger<FileStorageService> _logger;
         private readonly string[] _allowedExtensions = { ".pdf" };
-        private const long _maxFileSize = 10 * 1024 * 1024; // 10MB
+        private const long _maxFileSize = 10 * 1024 * 1024;  
 
         public FileStorageService(IWebHostEnvironment environment, ILogger<FileStorageService> logger)
         {
@@ -27,7 +27,6 @@ namespace EAPD7111Part2POE.Services
 
             try
             {
-                // Validate file exists
                 if (file == null || file.Length == 0)
                 {
                     result.Success = false;
@@ -35,7 +34,6 @@ namespace EAPD7111Part2POE.Services
                     return result;
                 }
 
-                // Validate file size
                 if (file.Length > _maxFileSize)
                 {
                     result.Success = false;
@@ -43,7 +41,6 @@ namespace EAPD7111Part2POE.Services
                     return result;
                 }
 
-                // Validate file extension
                 var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
                 if (!_allowedExtensions.Contains(fileExtension))
                 {
@@ -52,7 +49,6 @@ namespace EAPD7111Part2POE.Services
                     return result;
                 }
 
-                // Validate content type
                 if (file.ContentType != "application/pdf")
                 {
                     result.Success = false;
@@ -60,18 +56,15 @@ namespace EAPD7111Part2POE.Services
                     return result;
                 }
 
-                // Create upload directory if it doesn't exist
                 var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", subDirectory);
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
-                // Generate unique UUID filename to prevent overwrites
                 var uniqueFileName = $"{Guid.NewGuid()}_{SanitizeFileName(Path.GetFileNameWithoutExtension(file.FileName))}{fileExtension}";
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                // Save file with transaction-like safety (write to temp then move)
                 var tempFilePath = filePath + ".tmp";
                 try
                 {
@@ -81,7 +74,6 @@ namespace EAPD7111Part2POE.Services
                         await fileStream.FlushAsync();
                     }
 
-                    // Move temp file to final location
                     if (File.Exists(filePath))
                     {
                         File.Delete(filePath);
@@ -90,14 +82,12 @@ namespace EAPD7111Part2POE.Services
                 }
                 finally
                 {
-                    // Clean up temp file if it still exists
                     if (File.Exists(tempFilePath))
                     {
                         File.Delete(tempFilePath);
                     }
                 }
 
-                // Store relative path for database
                 var relativePath = Path.Combine("uploads", subDirectory, uniqueFileName).Replace("\\", "/");
 
                 result.Success = true;
@@ -132,7 +122,6 @@ namespace EAPD7111Part2POE.Services
                 if (string.IsNullOrEmpty(filePath))
                     return false;
 
-                // Remove leading slash and convert to physical path
                 var relativePath = filePath.TrimStart('/');
                 var fullPath = Path.Combine(_environment.WebRootPath, relativePath);
 
@@ -166,7 +155,6 @@ namespace EAPD7111Part2POE.Services
                     return result;
                 }
 
-                // Remove leading slash and convert to physical path
                 var relativePath = filePath.TrimStart('/');
                 var fullPath = Path.Combine(_environment.WebRootPath, relativePath);
 
@@ -177,7 +165,6 @@ namespace EAPD7111Part2POE.Services
                     return result;
                 }
 
-                // Read file bytes asynchronously
                 var fileBytes = await File.ReadAllBytesAsync(fullPath);
 
                 result.Success = true;
@@ -198,7 +185,6 @@ namespace EAPD7111Part2POE.Services
             return result;
         }
 
-        // Legacy method for backward compatibility
         public byte[] GetFile(string filePath)
         {
             var result = GetFileAsync(filePath).GetAwaiter().GetResult();
@@ -241,14 +227,12 @@ namespace EAPD7111Part2POE.Services
             if (string.IsNullOrEmpty(fileName))
                 return "document";
 
-            // Remove invalid characters from filename
             char[] invalidChars = Path.GetInvalidFileNameChars();
             foreach (char c in invalidChars)
             {
                 fileName = fileName.Replace(c.ToString(), "");
             }
 
-            // Limit length and remove consecutive spaces
             fileName = fileName.Trim();
             if (fileName.Length > 50)
                 fileName = fileName.Substring(0, 50);

@@ -182,12 +182,9 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Add download tracking for PDF files
             $('#downloadPdfBtn').on('click', function (e) {
-                // Optional: Add analytics tracking or logging here
                 console.log('PDF download initiated for contract: @Model.ContractReference');
 
-                // Show a brief notification
                 var notification = $('<div class="alert alert-info alert-dismissible fade show position-fixed top-0 end-0 m-3" style="z-index: 9999;" role="alert">' +
                     '<i class="bi bi-download"></i> Download started...' +
                     '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
